@@ -2675,7 +2675,7 @@ def main():
             'wfr': {'eta_theta': [0.0001, 0.0002, 0.0005], 'eta_w': [0.002, 0.005, 0.01]},
             'fr': {'eta_w': [0.002, 0.005, 0.01]},
         }
-        # (省略full_grid_search实现，保持原样或略去，因为默认关闭)
+        # 
         pass
 
     K = 1000
@@ -2710,7 +2710,7 @@ def main():
 
     avg_wall_times = {mode: wall_times[mode] / num_runs for mode in modes}
 
-    # ========== 生成 Table 2 (程序化) ==========
+    # table 2
     print("\n--- Table 2: Final Performance (Mean ± Std over 20 runs) ---")
     print(f"{'Algorithm':<12} {'Final NLL':<20} {'Final MMD':<20} {'Wall Time (s)':<15} {'Convergence Iter':<20}")
     for mode in modes:
@@ -2721,7 +2721,7 @@ def main():
         final_mmd_mean = mmd_mat[:, -1].mean()
         final_mmd_std = mmd_mat[:, -1].std()
 
-        # 收敛准则：同时满足 (1) MMD < 最终MMD + (起始MMD - 最终MMD)*0.01 (2) MMD二阶导数绝对值 < 0.05
+        # 
         conv_iters = []
         for i in range(num_runs):
             series = mmd_mat[i]  # length L
@@ -2734,19 +2734,19 @@ def main():
                 conv_iters.append(L - 1)
                 continue
 
-            # 二阶差分：d2[k] = series[k+2] - 2*series[k+1] + series[k]，对应中间点 k+1
+            # 
             d2 = np.diff(series, n=2)  # length L-2
 
             conv_idx = None
             for k in range(L - 2):
-                # 中间点索引为 k+1
+                #
                 mid_idx = k + 1
                 if abs(d2[k]) < 0.05 and series[mid_idx] < threshold:
                     conv_idx = mid_idx
                     break
 
             if conv_idx is None:
-                # 回退到仅满足原始条件（MMD < threshold）的第一个点
+                
                 idx = np.where(series < threshold)[0]
                 if len(idx) > 0:
                     conv_idx = idx[0]
@@ -2759,7 +2759,7 @@ def main():
               f"{final_mmd_mean:.4f}±{final_mmd_std:.4f}  "
               f"{avg_wall_times[mode]:<15.2f} {conv_avg:<20.1f}")
 
-    # ========== 绘图 ==========
+    # plot
     fig, axes = plt.subplots(1, 2, figsize=(18, 7))
     for mode in modes:
         plot_steps = results[mode]['steps'][0].numpy()
