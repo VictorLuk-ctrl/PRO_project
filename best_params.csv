@@ -1,0 +1,7 @@
+Algorithm,Best Parameters,Validation_MMD,Elapsed_sec,Failed_combos
+pro,{'dt': np.float64(0.00755)},0.30857,9.8,0
+underdamped_pro,"{'nula_step_size': np.float64(0.0605), 'nula_friction': np.float64(7.645833333333333)}",0.30514,215.7,0
+vgd,"{'vgd_step_size': np.float64(0.0405), 'vgd_lengthscales': (np.float64(0.05), np.float64(0.1), np.float64(0.2))}",0.27945,272.6,0
+fr_mirror,{'eta_w': np.float64(0.010812500000000001)},0.44440,7.9,0
+wfr_smc,{'dt': np.float64(0.005875000000000001)},0.29799,10.3,0
+wfr_bdl,"{'dt': np.float64(0.0017500000000000003), 'kde_bandwidth': np.float64(1.8291666666666664)}",0.29398,439.3,0
