@@ -968,7 +968,7 @@ def experiment8_low_dim_reference_fast():
     print("Experiment 8 (Fast): 1D mixture-of-Gaussians, single-Gaussian likelihood")
     print("=" * 60)
 
-    # ---------- 1. 生成合成数据：混合高斯 ----------
+    
     n_samples = 100
     torch.manual_seed(2026)
     mean1, mean2 = -1.0, 1.0
@@ -978,16 +978,15 @@ def experiment8_low_dim_reference_fast():
     y = torch.where(comp,
                     mean1 + std1 * torch.randn(n_samples),
                     mean2 + std2 * torch.randn(n_samples)).view(-1, 1)
-    X = torch.ones(n_samples, 1)  # 无输入变量，仅截距
-
-    # 估计 sigma^2 和 gamma^2
+    X = torch.ones(n_samples, 1)  
+    
     theta_ml = torch.mean(y)
     sigma2_hat = torch.mean((y - theta_ml) ** 2).clamp_min(1e-4).item()
     gamma2_hat = median_heuristic_gamma2(y)
     lambda_n = math.sqrt(n_samples)
     print(f"n={n_samples}, sigma2={sigma2_hat:.4f}, gamma2={gamma2_hat:.4f}, lambda={lambda_n:.4f}")
 
-    # ---------- 2. 构造高精度参考解（密集网格 + 权重优化） ----------
+    
     grid_points = 200
     grid_range = (-4.0, 4.0)
     theta_grid = torch.linspace(grid_range[0], grid_range[1], grid_points, device=device).view(-1, 1)
@@ -1003,10 +1002,10 @@ def experiment8_low_dim_reference_fast():
             theta_ref, w_ref = train_step_fr_mirror(theta_grid, w_ref, X, y,
                                                     gamma2_hat, sigma2_hat,
                                                     lambda_n, eta_w, base_w)
-    theta_ref = theta_grid  # 固定网格点
+    theta_ref = theta_grid  
     print("Reference solution computed.")
 
-    # ---------- 3. 运行待比较算法 ----------
+   
     modes = ['pro', 'vgd', 'fr_mirror', 'wfr_smc', 'wfr_bdl']
     algo_params = {
         'pro': {'dt': 0.01},
@@ -1031,7 +1030,7 @@ def experiment8_low_dim_reference_fast():
                       'p': p_alg, 'd': 1, 'kde_bandwidth': 0.8}
             params.update(algo_params[mode])
 
-            # 按模式运行算法
+            
             if mode == 'pro':
                 theta_alg = theta_init.clone()
                 for _ in range(K_alg):
@@ -1081,7 +1080,7 @@ def experiment8_low_dim_reference_fast():
             if seed == num_seeds - 1:
                 final_states[mode] = (theta_alg.detach().cpu(), w_alg.detach().cpu())
 
-            # 计算指标
+           
             obj_ref = compute_prO_objective(theta_ref, w_ref, X, y,
                                             gamma2_hat, sigma2_hat, lambda_n,
                                             kde_bandwidth=0.8)
@@ -1110,7 +1109,7 @@ def experiment8_low_dim_reference_fast():
             'std_mmd': np.std(mmd_dists) if num_seeds > 1 else 0.0
         }
 
-    # ---------- 4. 输出数值结果 ----------
+    
     print("\n" + "=" * 60)
     print("Experiment 8 Results (1D mixture-of-Gaussians)")
     print("=" * 60)
@@ -1122,7 +1121,7 @@ def experiment8_low_dim_reference_fast():
         print(f"{ALGORITHM_LABELS[mode]:<12} {res['target_diff']:<15.6f} "
               f"{res['grad_diff']:<15.6f} {res['mmd_dist']:<15.6f}")
 
-    # ---------- 5. 绘制柱状图 ----------
+    # bar plot
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     labels = [ALGORITHM_LABELS[m] for m in modes]
     colors = [ALGORITHM_COLORS[m] for m in modes]
@@ -1146,7 +1145,7 @@ def experiment8_low_dim_reference_fast():
     plt.savefig('exp8_low_dim_reference_fast.png', dpi=150)
     plt.show()
 
-    # ---------- 6. 后验密度对比图（修复版） ----------
+    
     def kde_density(x_eval, theta, w, bandwidth):
         """
         计算任意点 x_eval 上的 KDE 密度值。
@@ -1163,17 +1162,17 @@ def experiment8_low_dim_reference_fast():
     x_eval = torch.linspace(-4, 4, 500, device=device).view(-1, 1)  # (500,1)
     bandwidth = 0.3
 
-    # 计算参考解密度
+    
     density_ref = kde_density(x_eval, theta_ref, w_ref, bandwidth).cpu().numpy()
 
     fig, axes = plt.subplots(1, len(modes) + 1, figsize=(3 * (len(modes) + 1), 4))
-    # 第一个子图：参考解
+    
     axes[0].plot(x_eval.cpu().numpy(), density_ref, color='black', label='Reference')
     axes[0].set_title('Reference')
     axes[0].set_xlim(-4, 4)
     axes[0].legend()
 
-    # 每个算法一个子图
+    # plot foe each algo
     for i, mode in enumerate(modes):
         theta_alg, w_alg = final_states[mode]
         theta_alg = theta_alg.to(device)
@@ -1199,5 +1198,5 @@ if __name__ == "__main__":
     experiment5_misspecification_scenarios()
     experiment6_fr_particle_count()
     experiment7_initialization_failure()
-    experiment8_low_dim_reference_fast()   # 新增实验8
+    experiment8_low_dim_reference_fast()   
     print("\nAll extended experiments completed.")
