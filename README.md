@@ -28,7 +28,7 @@ All code is written in PyTorch and uses GPU acceleration if available. The scrip
 | File | Description |
 |------|-------------|
 | pro_flows_comparison.py | Original script comparing eight algorithms on the California Housing dataset, with optional grid search. Produces main comparison plots. |
-| pro_flows_comparison_improvedV3.py | Extended script with three experiments: (1) Bayes vs. PrO on synthetic data, (2) full algorithm comparison on synthetic data, (3) real dataset with separate hyperparameter search for PrO, SMC‑WFR and Bayes MFLD, including particle norm/gradient norm monitoring. |
+| pro_flows_comparison_finalV3.py | Extended script with three experiments: (1) Bayes vs. PrO on synthetic data, (2) full algorithm comparison on synthetic data, (3) real dataset with separate hyperparameter search for PrO, SMC‑WFR and Bayes MFLD, including particle norm/gradient norm monitoring. |
 | pro_flows_comparison_0816V2.py | Additional experiments (5–8) focusing on misspecification scenarios, particle count sensitivity, initialisation traps, and a low‑dimensional reference benchmark. |
 | grid_search_for_paper.py | Systematic grid‑search on the California Housing dataset, producing parameter sensitivity plots, convergence curves, and LaTeX tables for the paper. Includes statistical significance testing between SMC‑WFR and BDL‑WFR. |
 
@@ -66,12 +66,22 @@ All scripts automatically detect CUDA and use GPU when available. The outputs (f
 - Runs 8 algorithms for 1000 iterations, 20 independent runs.
 - Generates the main comparison plot: test NLL and test MMD vs. iteration.
 
-### 2. pro_flows_comparison_improvedV3.py
-Performs three extended experiments:
+### 2. pro_flows_comparison_finalV3.py – Extended Studies
+- Experiment 1: PrO (MFLD) vs. Bayes (ULA) on synthetic nonlinear data. Compares predictive NLL and particle behaviour.
 
-- Experiment 1: Compares Bayes MFLD with PrO MFLD on a synthetic nonlinear dataset, showing predictive NLL curves and particle line plots.
-- Experiment 2: Compares all PrO algorithms on synthetic linear data, including trajectories and weight evolution plots.
-- Experiment 3: Uses a real dataset (Concrete or Diabetes, falling back to Diabetes) and performs separate hyperparameter searches for PrO, SMC‑WFR and Bayes MFLD. It records particle norms and gradient norms for stability/convergence assessment, and compares against an exact Bayesian posterior (in the linear case). The final figure has four panels: NLL, MMD, particle norm, gradient norm.
+- Experiment 2: Comparison of all PrO algorithms on synthetic linear data, including particle trajectories and weight evolution for weighted methods.
+
+- Experiment 3: Real‑data (sleepstudy) comparison with separate hyperparameter search for PrO and Bayes ULA. Generates multiple figures:
+
+particle movement across iterations,
+
+coefficient distributions (posterior ellipses) and predictive intervals,
+
+early‑iteration metrics,
+
+final bar charts with error bars,
+
+full trace plots of NLL, MMD, particle spread, and drift norm.
 
 ### 3. pro_flows_comparison_0816V2.py
 Contains four additional experiments (numbered 5–8):
@@ -95,7 +105,7 @@ Contains four additional experiments (numbered 5–8):
 | Script | Output files |
 |--------|--------------|
 | pro_flows_comparison.py | pro_standard_flows_mmd.png |
-| pro_flows_comparison_improvedV3.py | exp1_bayes_vs_pro.png, exp2_algo_comparison_synthetic.png, exp2_*_trajectory.png, exp2_*_weights.png, exp3_real_dataset_improved_final.png |
+| pro_flows_comparison_finalV3.py | exp1_bayes_vs_pro.png, exp2_algo_comparison_synthetic.png, exp2_*_trajectory.png, exp2_*_weights.png, exp3_*.png |
 | pro_flows_comparison_0816V2.py | exp5_*.png, exp6_fr_particle_count.png, exp7_initialization_failure.png, exp8_low_dim_reference_fast.png, exp8_density_comparison.png |
 | grid_search_for_paper.py | ./results/sensitivity_*.png, ./results/validation_curves.png, ./results/all_combos.csv, ./results/best_params.csv |
 
